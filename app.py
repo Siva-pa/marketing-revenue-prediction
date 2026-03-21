@@ -10,40 +10,23 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="Marketing Dashboard", layout="wide")
 
 # -----------------------------
-# Custom CSS (Power BI Style Cards)
-# -----------------------------
-st.markdown("""
-<style>
-.card {
-    background-color: #1f2937;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    color: white;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-}
-.big-font {
-    font-size: 22px;
-    font-weight: bold;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# -----------------------------
 # Load Data
 # -----------------------------
 df = pd.read_csv("Datasets/train.csv")
 
 # -----------------------------
-# Load Model
+# Load Model + Scaler + Features
 # -----------------------------
-model = pickle.load(open("notebooks/models/knn_model.pkl", "rb"))
-scaler = pickle.load(open("notebooks/models/scaler.pkl", "rb"))
+model = pickle.load(open(r"F:\siva\Hyderabad _ ML\Project\Marketing Revenue Prediction System (KNN-Based)\notebooks\models\knn_model.pkl", "rb"))
+scaler = pickle.load(open(r"F:\siva\Hyderabad _ ML\Project\Marketing Revenue Prediction System (KNN-Based)\notebooks\models\scaler.pkl", "rb"))
+
+# IMPORTANT (fix for your error)
+feature_names = pickle.load(open(r"F:\siva\Hyderabad _ ML\Project\Marketing Revenue Prediction System (KNN-Based)\notebooks\models\features.pkl", "rb"))
 
 # -----------------------------
 # Title
 # -----------------------------
-st.title("📊 Marketing Revenue Dashboard")
+st.title("📊 Marketing Revenue Prediction Dashboard")
 
 # -----------------------------
 # KPI CARDS
@@ -52,82 +35,58 @@ st.subheader("📈 Key Insights")
 
 c1, c2, c3, c4 = st.columns(4)
 
-with c1:
-    st.markdown(f"<div class='card'><div class='big-font'>Ad Spend</div><br>{df['ad_spend'].mean():.2f}</div>", unsafe_allow_html=True)
-
-with c2:
-    st.markdown(f"<div class='card'><div class='big-font'>Revenue</div><br>{df['sales_revenue'].mean():.2f}</div>", unsafe_allow_html=True)
-
-with c3:
-    st.markdown(f"<div class='card'><div class='big-font'>CTR</div><br>{df['click_through_rate'].mean():.2f}</div>", unsafe_allow_html=True)
-
-with c4:
-    st.markdown(f"<div class='card'><div class='big-font'>CLV</div><br>{df['customer_lifetime_value'].mean():.2f}</div>", unsafe_allow_html=True)
+c1.metric("Avg Ad Spend", f"{df['ad_spend'].mean():.2f}")
+c2.metric("Avg Revenue", f"{df['sales_revenue'].mean():.2f}")
+c3.metric("Avg CTR", f"{df['click_through_rate'].mean():.2f}")
+c4.metric("Avg CLV", f"{df['customer_lifetime_value'].mean():.2f}")
 
 # -----------------------------
-# Navigation Buttons
+# Navigation
 # -----------------------------
-st.markdown("### 📂 Sections")
-
-col1, col2, col3, col4, col5, col6 = st.columns(6)
-
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
-with col1:
-    if st.button("📌 Problem"):
-        st.session_state.page = "problem"
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-with col2:
-    if st.button("🚀 Solution"):
-        st.session_state.page = "solution"
-
-with col3:
-    if st.button("📊 Univariate"):
-        st.session_state.page = "uni"
-
-with col4:
-    if st.button("📈 Bivariate"):
-        st.session_state.page = "bi"
-
-with col5:
-    if st.button("🔥 Heatmap"):
-        st.session_state.page = "heatmap"
-
-with col6:
-    if st.button("🎯 Prediction"):
-        st.session_state.page = "prediction"
+if col1.button("📌 Problem"):
+    st.session_state.page = "problem"
+if col2.button("🚀 Solution"):
+    st.session_state.page = "solution"
+if col3.button("📊 Univariate"):
+    st.session_state.page = "uni"
+if col4.button("📈 Bivariate"):
+    st.session_state.page = "bi"
+if col5.button("🔥 Heatmap"):
+    st.session_state.page = "heatmap"
+if col6.button("🎯 Prediction"):
+    st.session_state.page = "prediction"
 
 # -----------------------------
-# Pages
+# PAGES
 # -----------------------------
 
 # Problem
 if st.session_state.page == "problem":
     st.subheader("📌 Problem Statement")
     st.write("""
-    Businesses struggle to understand how marketing spend, pricing strategies, and customer behavior impact sales revenue. 
-    This project aims to build a predictive system to estimate revenue and support data-driven decisions.
+    Businesses struggle to understand how marketing strategies impact revenue.
     """)
 
 # Solution
 elif st.session_state.page == "solution":
     st.subheader("🚀 Solution")
     st.write("""
-    A machine learning solution will be developed by cleaning and preparing the data, analyzing key factors affecting revenue, and training a KNN regression model. 
-    The model will be evaluated for accuracy and deployed through a Streamlit application, enabling users to input business parameters and receive real-time sales revenue predictions for better decision-making.
+    We use KNN Regression to predict revenue using marketing and customer data.
     """)
 
 # Univariate
 elif st.session_state.page == "uni":
     st.subheader("📊 Univariate Analysis")
 
-    num_cols = df.select_dtypes(include=np.number).columns
-    col = st.selectbox("Select Feature", num_cols)
+    col = st.selectbox("Select Feature", df.select_dtypes(include=np.number).columns)
 
     fig, ax = plt.subplots(figsize=(5,3))
     ax.hist(df[col], bins=30)
-    ax.set_title(col)
     plt.tight_layout()
 
     c1, c2, c3 = st.columns([1,2,1])
@@ -144,8 +103,6 @@ elif st.session_state.page == "bi":
 
     fig, ax = plt.subplots(figsize=(5,3))
     ax.scatter(df[x], df[y])
-    ax.set_xlabel(x)
-    ax.set_ylabel(y)
     plt.tight_layout()
 
     c1, c2, c3 = st.columns([1,2,1])
@@ -168,8 +125,11 @@ elif st.session_state.page == "heatmap":
 
     st.pyplot(fig)
 
-# Prediction
+# -----------------------------
+# PREDICTION
+# -----------------------------
 elif st.session_state.page == "prediction":
+
     st.subheader("🎯 Revenue Prediction")
 
     st.sidebar.header("Input Features")
@@ -192,11 +152,31 @@ elif st.session_state.page == "prediction":
     customer_segment = segment_map[customer_segment]
 
     if st.button("🚀 Predict Revenue"):
-        features = np.array([[ad_spend, market_reach, impressions, ctr,
-                              price, discount, competition, seasonality,
-                              customer_segment, clv]])
 
-        features_scaled = scaler.transform(features)
+        # Create input dictionary
+        input_dict = {
+            "Ad Spend": ad_spend,
+            "Market Reach": market_reach,
+            "Impressions": impressions,
+            "CTR": ctr,
+            "Price": price,
+            "Discount Rate": discount,
+            "Competition Index": competition,
+            "Seasonality Index": seasonality,
+            "Customer Segment": customer_segment,
+            "Customer Lifetime Value": clv
+        }
+
+        input_df = pd.DataFrame([input_dict])
+
+        # 🔥 FIX: Match training columns exactly
+        input_df = input_df.reindex(columns=feature_names, fill_value=0)
+
+        # Scale
+        features_scaled = scaler.transform(input_df)
+
+        # Predict
         prediction = model.predict(features_scaled)[0]
 
         st.success(f"💰 Predicted Revenue: ₹ {prediction:,.2f}")
+
