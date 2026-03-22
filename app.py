@@ -11,15 +11,13 @@ import seaborn as sns
 st.set_page_config(page_title="Marketing Intelligence Dashboard", layout="wide")
 
 # -----------------------------
-# CUSTOM CSS (COMPACT + PREMIUM)
+# CUSTOM CSS (COMPACT UI)
 # -----------------------------
 st.markdown("""
 <style>
 .block-container {
     padding-top: 1rem;
     padding-bottom: 1rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
 }
 .metric-card {
     background-color: #111827;
@@ -73,7 +71,7 @@ page = st.sidebar.radio(
 # -----------------------------
 if page == "Overview":
     st.subheader("📌 Business Overview")
-    st.write("This dashboard predicts revenue using KNN based on marketing data.")
+    st.write("Predict revenue using KNN based on marketing features.")
 
 # -----------------------------
 # UNIVARIATE
@@ -85,8 +83,6 @@ elif page == "Univariate":
 
     fig, ax = plt.subplots(figsize=(4,2))
     ax.hist(df[col], bins=30)
-    ax.set_title(col)
-
     st.pyplot(fig)
 
 # -----------------------------
@@ -102,9 +98,6 @@ elif page == "Bivariate":
 
     fig, ax = plt.subplots(figsize=(4,2))
     ax.scatter(df[x], df[y])
-    ax.set_xlabel(x)
-    ax.set_ylabel(y)
-
     st.pyplot(fig)
 
 # -----------------------------
@@ -116,19 +109,11 @@ elif page == "Heatmap":
     corr = df.corr(numeric_only=True)
 
     fig, ax = plt.subplots(figsize=(6,4))
-    sns.heatmap(
-        corr,
-        annot=True,
-        fmt=".2f",
-        cmap="coolwarm",
-        linewidths=0.5,
-        ax=ax
-    )
-
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
     st.pyplot(fig)
 
 # -----------------------------
-# PREDICTION (FULL FIX)
+# PREDICTION (FINAL FIX)
 # -----------------------------
 elif page == "Prediction":
 
@@ -150,13 +135,11 @@ elif page == "Prediction":
     customer_segment = st.sidebar.selectbox("Customer Segment", ["Low", "Medium", "High"])
     clv = st.sidebar.number_input("Customer Lifetime Value", 0.0)
 
-    # Encode categorical
-    segment_map = {"Low": 0, "Medium": 1, "High": 2}
-    customer_segment = segment_map[customer_segment]
-
     if st.button("🚀 Predict Revenue"):
 
-        # 🔥 Create input dictionary (same as training columns)
+        # -----------------------------
+        # CREATE INPUT
+        # -----------------------------
         input_dict = {
             "ad_spend": ad_spend,
             "market_reach": market_reach,
@@ -172,19 +155,26 @@ elif page == "Prediction":
 
         input_df = pd.DataFrame([input_dict])
 
-        # 🔥 CRITICAL FIX → match training feature count (handles 16 features)
+        # -----------------------------
+        # 🔥 FIX: SIMPLE ENCODING
+        # -----------------------------
+        segment_map = {"Low": 0, "Medium": 1, "High": 2}
+        input_df["customer_segment"] = input_df["customer_segment"].map(segment_map)
+
+        # -----------------------------
+        # 🔥 FIX: MATCH TRAINING FEATURES (16)
+        # -----------------------------
         input_df = input_df.reindex(columns=feature_names, fill_value=0)
 
-        # Debug (optional)
-        # st.write("Input DF:", input_df)
-
-        # Scale
+        # -----------------------------
+        # SCALE + PREDICT
+        # -----------------------------
         features_scaled = scaler.transform(input_df)
-
-        # Predict
         prediction = model.predict(features_scaled)[0]
 
-        # PREMIUM OUTPUT CARD
+        # -----------------------------
+        # OUTPUT (PREMIUM)
+        # -----------------------------
         st.markdown(
             f"""
             <div style="background-color:#16a34a;padding:20px;border-radius:10px;color:white;text-align:center;">
