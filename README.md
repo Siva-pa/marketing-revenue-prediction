@@ -1,30 +1,36 @@
 # 🚀 Marketing Revenue Prediction System (KNN-Based)
 
-A **Machine Learning-powered Streamlit dashboard** that predicts marketing revenue based on campaign performance, customer behavior, and market conditions.
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
+![ML](https://img.shields.io/badge/Machine%20Learning-KNN-green)
+![Status](https://img.shields.io/badge/Status-Deployed-success)
 
 ---
 
-## 📊 Project Overview
+## 📌 Overview
 
-Businesses often struggle to understand how marketing efforts translate into revenue.
-This project solves that problem by using a **K-Nearest Neighbors (KNN) Regression model** to predict revenue based on key marketing features.
+This project is a **Machine Learning-powered interactive dashboard** that predicts marketing revenue based on campaign performance and customer behavior.
 
-The application is deployed using **Streamlit**, providing an interactive dashboard for real-time predictions and insights.
+It helps businesses answer:
+
+👉 *“How much revenue can we expect from a marketing strategy?”*
+
+Built using **K-Nearest Neighbors (KNN)** and deployed with **Streamlit**, the app provides real-time predictions and visual insights.
 
 ---
 
 ## ✨ Features
 
-* 📈 **Revenue Prediction using KNN**
-* 📊 **Interactive Dashboard (Streamlit)**
-* 🔥 **Correlation Heatmap with insights**
-* 📉 **Univariate & Bivariate Analysis**
-* 🎯 **Real-time Input-based Predictions**
-* 💡 Clean & Premium UI
+* 🎯 **Revenue Prediction using KNN**
+* 📊 Interactive dashboard with Streamlit
+* 📈 Univariate & Bivariate analysis
+* 🔥 Correlation Heatmap with values
+* ⚡ Real-time predictions based on user input
+* 🎨 Premium UI (clean & compact)
 
 ---
 
-## 🧠 Machine Learning Pipeline
+## 🧠 Machine Learning Workflow
 
 1. Data Cleaning & Preprocessing
 2. Feature Engineering
@@ -48,14 +54,14 @@ The application is deployed using **Streamlit**, providing an interactive dashbo
 
 ## 📁 Project Structure
 
-```
+```bash
 marketing-revenue-prediction/
 │── app.py
 │── requirements.txt
 │── runtime.txt
 │── Datasets/
-│   ├── train.csv
-│   └── test.csv
+│   ├── train.csv        # Training dataset
+│   └── test.csv         # Testing dataset
 │── notebooks/
 │   ├── eda.ipynb
 │   └── models/
@@ -64,49 +70,21 @@ marketing-revenue-prediction/
 │       ├── features.pkl
 │       ├── encoders.pkl
 ```
----
-
-## ⚙️ Installation & Setup
-
-### 1️⃣ Clone Repository
-
-```
-git clone https://github.com/Siva-pa/marketing-revenue-prediction.git
-cd marketing-revenue-prediction
-```
 
 ---
 
-### 2️⃣ Install Dependencies
+## 📊 Dataset Description
 
-```
-pip install -r requirements.txt
-```
+* **train.csv** → Used for training the model
+* **test.csv** → Used for evaluation
 
----
-
-### 3️⃣ Run Application
-
-```
-streamlit run app.py
-```
-
----
-
-## 🌐 Live Demo
-
-👉 (Add your Streamlit link here)
-
----
-
-## 📊 Input Features
+### Features include:
 
 * Ad Spend
 * Market Reach
 * Impressions
-* Click Through Rate (CTR)
-* Price
-* Discount Rate
+* CTR (Click Through Rate)
+* Price & Discount Rate
 * Competition Index
 * Seasonality Index
 * Customer Segment
@@ -114,31 +92,69 @@ streamlit run app.py
 
 ---
 
-## 🎯 Output
+## ⚙️ Installation & Setup
 
-* 💰 Predicted Marketing Revenue
+### 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/Siva-pa/marketing-revenue-prediction.git
+cd marketing-revenue-prediction
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3️⃣ Run Application
+
+```bash
+streamlit run app.py
+```
 
 ---
 
-## 🧪 Example Prediction
+## 🌐 Live Demo
 
-| Scenario              | Revenue      |
-| --------------------- | ------------ |
-| Low Marketing Effort  | Low Revenue  |
-| High Marketing Effort | High Revenue |
+👉 https://marketing-revenue-prediction.streamlit.app/
+
+---
+
+## 📸 Screenshots
+
+### 🔹 Dashboard
+
+<img width="1919" height="719" alt="image" src="https://github.com/user-attachments/assets/24429b4e-80c0-4a51-8f1d-3d80844c0e49" />
+
+
+### 🔹 Prediction Output
+
+<img width="1919" height="871" alt="image" src="https://github.com/user-attachments/assets/1812c4bb-4857-4a3a-8804-3c2f2b001a41" />
+
+
+
+---
+
+## 🧪 Example Use Case
+
+| Scenario             | Input                | Prediction   |
+| -------------------- | -------------------- | ------------ |
+| Low Campaign Budget  | Low spend, low CTR   | Low revenue  |
+| High Campaign Budget | High spend, high CTR | High revenue |
 
 ---
 
 ## 🚀 Key Learnings
 
-* Handling **feature mismatch in deployment**
-* Importance of **consistent preprocessing**
-* Model deployment using **Streamlit**
-* Debugging real-world ML issues
+* Handling **feature mismatch during deployment**
+* Importance of **consistent preprocessing pipelines**
+* Real-world debugging of ML systems
+* Building end-to-end ML applications with Streamlit
 
 ---
 
-## 🔥 Future Enhancements
+## 🔮 Future Enhancements
 
 * 📈 Model explainability (SHAP / feature importance)
 * 🤖 Compare multiple ML models
@@ -152,12 +168,14 @@ streamlit run app.py
 **Siva Kishore Pasupuleti**
 
 * 🔗 GitHub: https://github.com/Siva-pa
-* 💼 Aspiring AI/ML Engineer
 
 ---
 
-## ⭐ If you like this project
+## ⭐ Support
 
-Give it a ⭐ on GitHub!
+If you like this project:
+
+👉 Give it a ⭐ on GitHub
+👉 Share it with others
 
 ---
