@@ -155,16 +155,16 @@ elif st.session_state.page == "prediction":
 
         # Create input dictionary
         input_dict = {
-            "Ad Spend": ad_spend,
-            "Market Reach": market_reach,
-            "Impressions": impressions,
-            "CTR": ctr,
-            "Price": price,
-            "Discount Rate": discount,
-            "Competition Index": competition,
-            "Seasonality Index": seasonality,
-            "Customer Segment": customer_segment,
-            "Customer Lifetime Value": clv
+            "ad_spend": ad_spend,
+            "market_reach": market_reach,
+            "impressions": impressions,
+            "click_through_rate": ctr,
+            "price": price,
+            "discount_rate": discount,
+            "competition_index": competition,
+            "seasonality_index": seasonality,
+            "customer_segment": customer_segment,
+            "customer_lifetime_value": clv
         }
 
         input_df = pd.DataFrame([input_dict])
