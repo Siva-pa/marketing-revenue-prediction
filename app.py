@@ -3,132 +3,134 @@ import numpy as np
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # -----------------------------
-# Page Config
+# PAGE CONFIG
 # -----------------------------
-st.set_page_config(page_title="Marketing Dashboard", layout="wide")
+st.set_page_config(page_title="Marketing Intelligence Dashboard", layout="wide")
 
 # -----------------------------
-# Load Data
+# CUSTOM CSS (COMPACT + PREMIUM)
+# -----------------------------
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+.metric-card {
+    background-color: #111827;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -----------------------------
+# LOAD DATA
 # -----------------------------
 df = pd.read_csv("Datasets/train.csv")
 
 # -----------------------------
-# Load Model + Scaler + Features
+# LOAD MODEL FILES
 # -----------------------------
-model = pickle.load(open(r"F:\siva\Hyderabad _ ML\Project\Marketing Revenue Prediction System (KNN-Based)\notebooks\models\knn_model.pkl", "rb"))
-scaler = pickle.load(open(r"F:\siva\Hyderabad _ ML\Project\Marketing Revenue Prediction System (KNN-Based)\notebooks\models\scaler.pkl", "rb"))
-
-# IMPORTANT (fix for your error)
-feature_names = pickle.load(open(r"F:\siva\Hyderabad _ ML\Project\Marketing Revenue Prediction System (KNN-Based)\notebooks\models\features.pkl", "rb"))
+model = pickle.load(open("notebooks/models/knn_model.pkl", "rb"))
+scaler = pickle.load(open("notebooks/models/scaler.pkl", "rb"))
+feature_names = pickle.load(open("notebooks/models/features.pkl", "rb"))
 
 # -----------------------------
-# Title
+# TITLE
 # -----------------------------
-st.title("📊 Marketing Revenue Prediction Dashboard")
+st.title("🚀 Marketing Intelligence Dashboard")
 
 # -----------------------------
 # KPI CARDS
 # -----------------------------
-st.subheader("📈 Key Insights")
+st.subheader("📊 Key Performance Indicators")
 
 c1, c2, c3, c4 = st.columns(4)
 
-c1.metric("Avg Ad Spend", f"{df['ad_spend'].mean():.2f}")
-c2.metric("Avg Revenue", f"{df['sales_revenue'].mean():.2f}")
-c3.metric("Avg CTR", f"{df['click_through_rate'].mean():.2f}")
-c4.metric("Avg CLV", f"{df['customer_lifetime_value'].mean():.2f}")
+c1.markdown(f"<div class='metric-card'>Ad Spend<br><h3>{df['ad_spend'].mean():.0f}</h3></div>", unsafe_allow_html=True)
+c2.markdown(f"<div class='metric-card'>Revenue<br><h3>{df['sales_revenue'].mean():.0f}</h3></div>", unsafe_allow_html=True)
+c3.markdown(f"<div class='metric-card'>CTR<br><h3>{df['click_through_rate'].mean():.3f}</h3></div>", unsafe_allow_html=True)
+c4.markdown(f"<div class='metric-card'>CLV<br><h3>{df['customer_lifetime_value'].mean():.0f}</h3></div>", unsafe_allow_html=True)
 
 # -----------------------------
-# Navigation
+# SIDEBAR NAVIGATION
 # -----------------------------
-if "page" not in st.session_state:
-    st.session_state.page = "home"
-
-col1, col2, col3, col4, col5, col6 = st.columns(6)
-
-if col1.button("📌 Problem"):
-    st.session_state.page = "problem"
-if col2.button("🚀 Solution"):
-    st.session_state.page = "solution"
-if col3.button("📊 Univariate"):
-    st.session_state.page = "uni"
-if col4.button("📈 Bivariate"):
-    st.session_state.page = "bi"
-if col5.button("🔥 Heatmap"):
-    st.session_state.page = "heatmap"
-if col6.button("🎯 Prediction"):
-    st.session_state.page = "prediction"
+page = st.sidebar.radio(
+    "Navigation",
+    ["Overview", "Univariate", "Bivariate", "Heatmap", "Prediction"]
+)
 
 # -----------------------------
-# PAGES
+# OVERVIEW
 # -----------------------------
+if page == "Overview":
+    st.subheader("📌 Business Overview")
+    st.write("This dashboard predicts revenue using KNN based on marketing data.")
 
-# Problem
-if st.session_state.page == "problem":
-    st.subheader("📌 Problem Statement")
-    st.write("""
-    Businesses struggle to understand how marketing strategies impact revenue.
-    """)
-
-# Solution
-elif st.session_state.page == "solution":
-    st.subheader("🚀 Solution")
-    st.write("""
-    We use KNN Regression to predict revenue using marketing and customer data.
-    """)
-
-# Univariate
-elif st.session_state.page == "uni":
-    st.subheader("📊 Univariate Analysis")
+# -----------------------------
+# UNIVARIATE
+# -----------------------------
+elif page == "Univariate":
+    st.subheader("📊 Feature Distribution")
 
     col = st.selectbox("Select Feature", df.select_dtypes(include=np.number).columns)
 
-    fig, ax = plt.subplots(figsize=(5,3))
+    fig, ax = plt.subplots(figsize=(4,2))
     ax.hist(df[col], bins=30)
-    plt.tight_layout()
-
-    c1, c2, c3 = st.columns([1,2,1])
-    with c2:
-        st.pyplot(fig)
-
-# Bivariate
-elif st.session_state.page == "bi":
-    st.subheader("📈 Bivariate Analysis")
-
-    num_cols = df.select_dtypes(include=np.number).columns
-    x = st.selectbox("X-axis", num_cols)
-    y = st.selectbox("Y-axis", num_cols)
-
-    fig, ax = plt.subplots(figsize=(5,3))
-    ax.scatter(df[x], df[y])
-    plt.tight_layout()
-
-    c1, c2, c3 = st.columns([1,2,1])
-    with c2:
-        st.pyplot(fig)
-
-# Heatmap
-elif st.session_state.page == "heatmap":
-    st.subheader("🔥 Correlation Heatmap")
-
-    fig, ax = plt.subplots(figsize=(6,4))
-    corr = df.corr(numeric_only=True)
-
-    cax = ax.matshow(corr)
-    plt.xticks(range(len(corr.columns)), corr.columns, rotation=90, fontsize=8)
-    plt.yticks(range(len(corr.columns)), corr.columns, fontsize=8)
-
-    fig.colorbar(cax)
-    plt.tight_layout()
+    ax.set_title(col)
 
     st.pyplot(fig)
 
 # -----------------------------
-# PREDICTION
+# BIVARIATE
 # -----------------------------
-elif st.session_state.page == "prediction":
+elif page == "Bivariate":
+    st.subheader("📈 Feature Relationships")
+
+    num_cols = df.select_dtypes(include=np.number).columns
+
+    x = st.selectbox("X-axis", num_cols)
+    y = st.selectbox("Y-axis", num_cols)
+
+    fig, ax = plt.subplots(figsize=(4,2))
+    ax.scatter(df[x], df[y])
+    ax.set_xlabel(x)
+    ax.set_ylabel(y)
+
+    st.pyplot(fig)
+
+# -----------------------------
+# HEATMAP (FIXED)
+# -----------------------------
+elif page == "Heatmap":
+    st.subheader("🔥 Correlation Heatmap")
+
+    corr = df.corr(numeric_only=True)
+
+    fig, ax = plt.subplots(figsize=(6,4))
+    sns.heatmap(
+        corr,
+        annot=True,
+        fmt=".2f",
+        cmap="coolwarm",
+        linewidths=0.5,
+        ax=ax
+    )
+
+    st.pyplot(fig)
+
+# -----------------------------
+# PREDICTION (FULL FIX)
+# -----------------------------
+elif page == "Prediction":
 
     st.subheader("🎯 Revenue Prediction")
 
@@ -148,12 +150,13 @@ elif st.session_state.page == "prediction":
     customer_segment = st.sidebar.selectbox("Customer Segment", ["Low", "Medium", "High"])
     clv = st.sidebar.number_input("Customer Lifetime Value", 0.0)
 
+    # Encode categorical
     segment_map = {"Low": 0, "Medium": 1, "High": 2}
     customer_segment = segment_map[customer_segment]
 
     if st.button("🚀 Predict Revenue"):
 
-        # Create input dictionary
+        # 🔥 Create input dictionary (same as training columns)
         input_dict = {
             "ad_spend": ad_spend,
             "market_reach": market_reach,
@@ -169,8 +172,11 @@ elif st.session_state.page == "prediction":
 
         input_df = pd.DataFrame([input_dict])
 
-        # 🔥 FIX: Match training columns exactly
+        # 🔥 CRITICAL FIX → match training feature count (handles 16 features)
         input_df = input_df.reindex(columns=feature_names, fill_value=0)
+
+        # Debug (optional)
+        # st.write("Input DF:", input_df)
 
         # Scale
         features_scaled = scaler.transform(input_df)
@@ -178,5 +184,13 @@ elif st.session_state.page == "prediction":
         # Predict
         prediction = model.predict(features_scaled)[0]
 
-        st.success(f"💰 Predicted Revenue: ₹ {prediction:,.2f}")
-
+        # PREMIUM OUTPUT CARD
+        st.markdown(
+            f"""
+            <div style="background-color:#16a34a;padding:20px;border-radius:10px;color:white;text-align:center;">
+                <h2>💰 Predicted Revenue</h2>
+                <h1>₹ {prediction:,.2f}</h1>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
