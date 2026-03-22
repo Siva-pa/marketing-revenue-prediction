@@ -53,16 +53,17 @@ marketing-revenue-prediction/
 │── app.py
 │── requirements.txt
 │── runtime.txt
-│── models/
-│   ├── knn_model.pkl
-│   ├── scaler.pkl
-│   ├── features.pkl
 │── Datasets/
-│   └── train.csv
+│   ├── train.csv
+│   └── test.csv
 │── notebooks/
-│   └── eda.ipynb
+│   ├── eda.ipynb
+│   └── models/
+│       ├── knn_model.pkl
+│       ├── scaler.pkl
+│       ├── features.pkl
+│       ├── encoders.pkl
 ```
-
 ---
 
 ## ⚙️ Installation & Setup
