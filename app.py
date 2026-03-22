@@ -8,10 +8,10 @@ import seaborn as sns
 # -----------------------------
 # PAGE CONFIG
 # -----------------------------
-st.set_page_config(page_title="Marketing Intelligence Dashboard", layout="wide")
+st.set_page_config(page_title="Marketing Revenue Prediction", layout="wide")
 
 # -----------------------------
-# CUSTOM CSS (COMPACT UI)
+# CUSTOM CSS
 # -----------------------------
 st.markdown("""
 <style>
@@ -24,6 +24,12 @@ st.markdown("""
     padding: 12px;
     border-radius: 10px;
     text-align: center;
+    color: white;
+}
+.section-box {
+    background-color: #1f2937;
+    padding: 20px;
+    border-radius: 10px;
     color: white;
 }
 </style>
@@ -44,12 +50,12 @@ feature_names = pickle.load(open("notebooks/models/features.pkl", "rb"))
 # -----------------------------
 # TITLE
 # -----------------------------
-st.title("🚀 Marketing Intelligence Dashboard")
+st.title("🚀 Marketing Revenue Prediction System")
 
 # -----------------------------
 # KPI CARDS
 # -----------------------------
-st.subheader("📊 Key Performance Indicators")
+st.subheader("📊 Key Business Metrics")
 
 c1, c2, c3, c4 = st.columns(4)
 
@@ -59,65 +65,110 @@ c3.markdown(f"<div class='metric-card'>CTR<br><h3>{df['click_through_rate'].mean
 c4.markdown(f"<div class='metric-card'>CLV<br><h3>{df['customer_lifetime_value'].mean():.0f}</h3></div>", unsafe_allow_html=True)
 
 # -----------------------------
-# SIDEBAR NAVIGATION
+# SIDEBAR
 # -----------------------------
 page = st.sidebar.radio(
     "Navigation",
-    ["Overview", "Univariate", "Bivariate", "Heatmap", "Prediction"]
+    ["Business Problem", "Solution", "EDA", "Heatmap", "Prediction"]
 )
 
 # -----------------------------
-# OVERVIEW
+# BUSINESS PROBLEM
 # -----------------------------
-if page == "Overview":
-    st.subheader("📌 Business Overview")
-    st.write("Predict revenue using KNN based on marketing features.")
+if page == "Business Problem":
+    st.subheader("📌 Business Problem")
 
-# -----------------------------
-# UNIVARIATE
-# -----------------------------
-elif page == "Univariate":
-    st.subheader("📊 Feature Distribution")
+    st.markdown("""
+    <div class='section-box'>
+    Businesses struggle to understand how marketing spend, pricing strategies, 
+    and customer behavior impact sales revenue.
 
-    col = st.selectbox("Select Feature", df.select_dtypes(include=np.number).columns)
-
-    fig, ax = plt.subplots(figsize=(4,2))
-    ax.hist(df[col], bins=30)
-    st.pyplot(fig)
+    👉 This leads to poor decision-making and reduced profitability.
+    </div>
+    """, unsafe_allow_html=True)
 
 # -----------------------------
-# BIVARIATE
+# SOLUTION
 # -----------------------------
-elif page == "Bivariate":
-    st.subheader("📈 Feature Relationships")
+elif page == "Solution":
+    st.subheader("💡 Solution Approach")
 
-    num_cols = df.select_dtypes(include=np.number).columns
-
-    x = st.selectbox("X-axis", num_cols)
-    y = st.selectbox("Y-axis", num_cols)
-
-    fig, ax = plt.subplots(figsize=(4,2))
-    ax.scatter(df[x], df[y])
-    st.pyplot(fig)
+    st.markdown("""
+    <div class='section-box'>
+    A machine learning solution using <b>KNN Regression</b> is built to:
+    - Analyze key factors affecting revenue  
+    - Predict revenue in real-time  
+    - Support data-driven decisions  
+    </div>
+    """, unsafe_allow_html=True)
 
 # -----------------------------
-# HEATMAP (FIXED)
+# EDA (UPDATED)
+# -----------------------------
+elif page == "EDA":
+
+    st.subheader("📊 Exploratory Data Analysis")
+
+    analysis_type = st.radio("Select Analysis Type", ["Univariate", "Bivariate"])
+
+    numeric_cols = df.select_dtypes(include=np.number).columns
+
+    # -----------------------------
+    # UNIVARIATE
+    # -----------------------------
+    if analysis_type == "Univariate":
+        st.markdown("### 🔹 Univariate Analysis")
+
+        col = st.selectbox("Select Feature", numeric_cols)
+
+        fig, ax = plt.subplots(figsize=(5,3))
+        ax.hist(df[col], bins=30)
+        ax.set_title(f"Distribution of {col}")
+
+        st.pyplot(fig)
+
+    # -----------------------------
+    # BIVARIATE
+    # -----------------------------
+    else:
+        st.markdown("### 🔹 Bivariate Analysis")
+
+        x = st.selectbox("X-axis", numeric_cols)
+        y = st.selectbox("Y-axis", numeric_cols)
+
+        fig, ax = plt.subplots(figsize=(5,3))
+        ax.scatter(df[x], df[y])
+        ax.set_xlabel(x)
+        ax.set_ylabel(y)
+
+        st.pyplot(fig)
+
+# -----------------------------
+# HEATMAP (IMPROVED SIZE)
 # -----------------------------
 elif page == "Heatmap":
     st.subheader("🔥 Correlation Heatmap")
 
     corr = df.corr(numeric_only=True)
 
-    fig, ax = plt.subplots(figsize=(6,4))
-    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+    fig, ax = plt.subplots(figsize=(10,7))  # 🔥 Increased size
+    sns.heatmap(
+        corr,
+        annot=True,
+        fmt=".2f",
+        cmap="coolwarm",
+        linewidths=0.5,
+        annot_kws={"size": 9}  # 🔥 Bigger text
+    )
+
     st.pyplot(fig)
 
 # -----------------------------
-# PREDICTION (FINAL FIX)
+# PREDICTION
 # -----------------------------
 elif page == "Prediction":
 
-    st.subheader("🎯 Revenue Prediction")
+    st.subheader("🎯 Predict Revenue")
 
     st.sidebar.header("Input Features")
 
@@ -137,9 +188,6 @@ elif page == "Prediction":
 
     if st.button("🚀 Predict Revenue"):
 
-        # -----------------------------
-        # CREATE INPUT
-        # -----------------------------
         input_dict = {
             "ad_spend": ad_spend,
             "market_reach": market_reach,
@@ -155,26 +203,19 @@ elif page == "Prediction":
 
         input_df = pd.DataFrame([input_dict])
 
-        # -----------------------------
-        # 🔥 FIX: SIMPLE ENCODING
-        # -----------------------------
+        # Encoding
         segment_map = {"Low": 0, "Medium": 1, "High": 2}
         input_df["customer_segment"] = input_df["customer_segment"].map(segment_map)
 
-        # -----------------------------
-        # 🔥 FIX: MATCH TRAINING FEATURES (16)
-        # -----------------------------
+        # Match features
         input_df = input_df.reindex(columns=feature_names, fill_value=0)
 
-        # -----------------------------
-        # SCALE + PREDICT
-        # -----------------------------
+        # Scale
         features_scaled = scaler.transform(input_df)
+
+        # Predict
         prediction = model.predict(features_scaled)[0]
 
-        # -----------------------------
-        # OUTPUT (PREMIUM)
-        # -----------------------------
         st.markdown(
             f"""
             <div style="background-color:#16a34a;padding:20px;border-radius:10px;color:white;text-align:center;">
